@@ -30,7 +30,7 @@ def extract_experience_from_tex(tex_content):
 
 # 配置你的专属 API Key
 # 请前往 Google AI Studio 免费获取
-genai.configure(api_key="AIzaSyDLDAGIHd2wkxfthmUCYkzzr-LUy-IwpCQ")
+genai.configure(api_key="API")
 
 def call_llm_to_polish(experiences, job_description, skills_db):
     # 初始化模型，处理文本推荐使用反应迅速的版本

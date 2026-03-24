@@ -4,7 +4,7 @@ from google import genai
 from google.genai import types
 
 # 初始配置：请务必替换为你的真实 API Key
-client = genai.Client(api_key="AIzaSyDLDAGIHd2wkxfthmUCYkzzr-LUy-IwpCQ")
+client = genai.Client(api_key="API")
 
 def process_tex_content(tex_content):
     # 匹配自定义包裹命令和普通item
