@@ -1,58 +1,192 @@
-# 🚀 AI Resume Pipeline Pro | AI 简历全自动流水线
+# 🚀 AI Resume Pipeline Pro  
+### AI 简历全自动流水线 | AI-Powered Resume Automation Pipeline
 
-**一键实现：内容提取 -> AI 润色 -> 格式转换 -> LaTeX 自动编译 PDF**
-
-这是一个基于 Python 和 大模型（Gemini/ChatGPT/DeepSeek/豆包）开发的简历专家工具。它能将你凌乱的 Word/PDF 原始经历，自动翻译、润色并精准注入到精美的 LaTeX 模板中，最后全自动生成 PDF。
-
-## ✨ 核心功能
-
-* **多格式兼容**：支持拖拽 Word (.docx), PDF, TeX 文件作为内容源。
-* **Overleaf 项目支持**：直接支持拖入从 Overleaf 下载的整个 .zip 工程包。
-* **AI 聚合大脑**：自主选择 Gemini, ChatGPT, DeepSeek 或 豆包模型。
-* **双语生成**：支持中英文界面切换，并能一键生成纯正的英文或中文简历。
-* **AI 瘦身控制**：授权 AI 删除冗余内容，并可选 1 页或 2 页的篇幅限制。
-* **本地自动化编译**：自动调用本地 xelatex 引擎，无需手动操作命令行。
-
-## 🛠️ 安装要求
-
-1.  **Python 环境**：Python 3.10+
-2.  **LaTeX 环境**：电脑需安装 [TeX Live](https://www.tug.org/texlive/) 或 [MiKTeX](https://miktex.org/)。
-    * *提示：请确保 `xelatex` 命令已加入系统环境变量。*
-3.  **依赖库**：
-    ```bash
-    pip install google-genai openai tkinterdnd2 pdfplumber python-docx chardet
-    ```
-
-## 🚀 快速开始
-
-1.  运行程序：`python main.py`
-2.  配置 API Key，选择你心仪的 AI 模型。
-3.  **左侧**：拖入你的原始简历文件。
-4.  **右侧**：拖入从 Overleaf 下载的模板 ZIP 包。
-5.  点击“启动流水线”，稍等片刻，PDF 就会出现在你指定的目录下！
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10+-blue.svg">
+  <img src="https://img.shields.io/badge/LaTeX-XeLaTeX-green.svg">
+  <img src="https://img.shields.io/badge/AI-Gemini%20%7C%20ChatGPT%20%7C%20DeepSeek-orange">
+  <img src="https://img.shields.io/badge/Status-Active-success">
+</p>
 
 ---
 
-## 🎨 如何从 Overleaf 获取海量模板
+## 📌 Overview | 项目简介
 
-Overleaf 是全球最大的 LaTeX 模板库。按照以下步骤，你可以将任何精美模板变为己用：
+**One-click workflow: Content Extraction → AI Refinement → Format Injection → LaTeX Auto PDF Compilation**  
+**一键实现：内容提取 → AI 润色 → 模板注入 → LaTeX 自动生成 PDF**
 
-### 1. 浏览与挑选
-访问 [Overleaf Gallery - Résumé / CV](https://www.overleaf.com/gallery/tagged/cv) 页面。这里有数千种高颜值的简历模板。
+AI Resume Pipeline Pro is an end-to-end automation tool that transforms raw resume materials (Word/PDF) into professionally formatted LaTeX CVs using large language models.
 
-### 2. 预览效果
-点击你喜欢的模板，查看它的预览图。注意有些模板是多页的，有些是单页的。
-
-### 3. 下载工程包 (关键)
-* 点击 **"Open as Template"** 进入编辑界面。
-* 在左上角菜单栏点击 **"Menu"** 图标。
-* 在 "Download" 栏目下，选择 **"Source"**。
-* 你会得到一个 **.zip** 格式的压缩包。
-
-### 4. 导入本软件
-**不需要解压！** 直接将下载好的这个 .zip 文件拖入我们软件右侧的“模板区域”。软件会自动识别其中的 `.cls` 样式文件和图片，确保排版原汁原味。
+本项目基于 Python + 大语言模型（Gemini / ChatGPT / DeepSeek / 豆包），可将原始简历内容自动翻译、润色并精准填充至 LaTeX 模板中，最终生成高质量 PDF。
 
 ---
 
-## 🤝 贡献与反馈
-如果你在使用过程中遇到任何 Bug（比如特定的 LaTeX 宏包无法编译），欢迎提交 Issue！
+## ✨ Features | 核心功能
+
+### 📂 Input & Template System | 输入与模板系统
+- Multi-format input: `.docx`, `.pdf`, `.tex`
+- Drag-and-drop Overleaf `.zip` project support  
+- Automatic parsing of LaTeX class and assets  
+
+- 多格式支持：Word / PDF / TeX  
+- 支持直接导入 Overleaf `.zip` 工程  
+- 自动识别 `.cls` 样式与资源文件  
+
+---
+
+### 🧠 AI Processing Engine | AI 智能处理引擎
+- Supports multiple LLM providers (Gemini / ChatGPT / DeepSeek / 豆包)
+- Automatic translation (CN ↔ EN)
+- Context-aware rewriting for professional tone
+- Content compression (1-page / 2-page control)
+
+- 多模型聚合（Gemini / ChatGPT / DeepSeek / 豆包）  
+- 自动中英双语生成  
+- 专业语境润色（符合求职语境）  
+- 内容压缩与篇幅控制  
+
+---
+
+### 🎯 JD-Aware Optimisation（新增核心能力）
+- **Tailor resumes based on Job Description (JD)**
+- Extract keywords and requirements from JD
+- Align experience descriptions with target roles
+- Improve ATS (Applicant Tracking System) compatibility
+
+- **支持根据岗位 JD 定向优化简历**
+- 自动提取 JD 关键词与能力要求  
+- 将经历重写为岗位匹配表达  
+- 提升 ATS（自动筛选系统）通过率  
+
+---
+
+### ⚙️ Automation Pipeline | 自动化流水线
+- Fully automated LaTeX compilation via `xelatex`
+- No manual editing or command-line required
+- End-to-end pipeline execution with one click
+
+- 自动调用 `xelatex` 编译  
+- 无需手动操作 LaTeX  
+- 一键完成全流程  
+
+---
+
+## 🛠️ Installation | 安装说明
+
+### 1. Python Environment
+```bash
+Python 3.10+
+```
+
+### 2. LaTeX Environment
+Install one of:
+- TeX Live  
+- MiKTeX  
+
+⚠️ Ensure:
+```bash
+xelatex --version
+```
+is available in your system PATH.
+
+---
+
+### 3. Dependencies
+```bash
+pip install google-genai openai tkinterdnd2 pdfplumber python-docx chardet
+```
+
+---
+
+## 🚀 Quick Start | 快速开始
+
+```bash
+python main.py
+```
+
+### Steps:
+
+1. Configure API Key and select AI model  
+2. Drag your **raw resume** into the left panel  
+3. Drag **Overleaf template ZIP** into the right panel  
+4. Click **Start Pipeline**  
+
+📄 Output: A polished PDF resume will be generated automatically  
+
+---
+
+## 🎨 Templates via Overleaf | 模板获取指南
+
+### Step 1 — Browse
+👉 https://www.overleaf.com/gallery/tagged/cv  
+
+### Step 2 — Preview
+Check layout (single-page vs multi-page)
+
+### Step 3 — Download Source
+- Click **Open as Template**
+- Menu → Download → **Source (.zip)**
+
+### Step 4 — Import
+❗ Do NOT unzip  
+Drag `.zip` directly into the tool  
+
+---
+
+## 📊 Typical Workflow | 典型使用流程
+
+```
+Raw Resume (Word/PDF)
+        ↓
+Content Extraction
+        ↓
+AI Refinement + JD Optimisation
+        ↓
+LaTeX Template Injection
+        ↓
+XeLaTeX Compilation
+        ↓
+Final PDF Resume
+```
+
+---
+
+## 🧩 Tech Stack | 技术栈
+
+- Python (Core Pipeline)
+- LLM APIs (OpenAI / Google / DeepSeek)
+- LaTeX (XeLaTeX)
+- PDF Parsing (pdfplumber)
+- GUI (tkinter + drag & drop)
+
+---
+
+## 🤝 Contribution | 贡献
+
+Contributions, issues, and feature requests are welcome.  
+
+欢迎提交 Issue 或 PR，包括：
+- LaTeX 编译问题  
+- 模板兼容问题  
+- 新模型接入  
+
+---
+
+## 📬 Feedback | 反馈
+
+If you encounter:
+- Compilation errors  
+- Model output issues  
+- Formatting bugs  
+
+Please open an Issue with:
+- Input file
+- Template used
+- Error logs  
+
+---
+
+## ⭐ Star This Repo
+
+If this project helps you land interviews, consider giving it a ⭐  
+如果这个项目帮你拿到面试，欢迎点个 ⭐
