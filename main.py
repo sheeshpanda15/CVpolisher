@@ -426,25 +426,85 @@ class ResumeApp:
             return
             
         jd = self.jd_text.get("1.0", tk.END).strip()
+        # 【关键修复点】：这里不再去获取已经被删掉的 skills_text
+        skills = "" 
         target_language = "English" if self.doc_lang_cb.get() == "English" else "中文"
         target_pages = self.page_cb.get()
         allow_prune = self.prune_var.get()
         
         self.update_status(f"Polishing existing TeX using {provider}...")
-        raw_text = doc_parser.extract_text(self.source_filepath)
-        matches = re.findall(r"\\resumeItem\{(.*?)\}", raw_text, re.DOTALL)
-        experiences_to_polish = [m.strip() for m in matches if len(m.strip().split()) > 3]
         
-        polished_data, new_skills = ai_engine.process_and_polish(
-            provider, api_key, doubao_id, experiences_to_polish, jd, "", 
-            target_lang=target_language, target_pages=target_pages, allow_pruning=allow_prune
-        )
-        
-        final_tex_content = raw_text
-        for old_text, new_text in polished_data.items():
-            final_tex_content = final_tex_content.replace(old_text, new_text)
+        with open(self.source_filepath, "r", encoding="utf8", errors="ignore") as f:
+            raw_tex = f.read()
             
-        final_tex_content = smart_inject_skills(final_tex_content, new_skills)
+        if target_pages == "1页 (极简)":
+            page_rule = "The target is a 1-page resume. Condense all content to be extremely concise, keeping only the most high-impact achievements."
+        elif target_pages == "2页 (丰富)":
+            page_rule = "The target is a 2-page resume. Provide more detailed context and quantified results while maintaining relevance."
+        else:
+            page_rule = "Balance the length naturally based on the input content."
+
+        prune_rule = "RUTHLESS PRUNING: You have absolute authority to delete irrelevant experiences and drastically simplify wordy sentences." if allow_prune else "DO NOT DELETE: Preserve all original experiences, only polish the phrasing."
+        
+        prompt = f"""
+        ROLE: Senior Executive Headhunter & LaTeX Expert.
+        TASK: You are provided with a complete LaTeX resume source code. Your job is to completely rewrite and polish the text content inside the document to align with the target Job Description (JD), WITHOUT breaking any LaTeX structures.
+
+        CORE DIRECTIVES:
+        1. CRITICAL RESTRUCTURING: Rewrite the experience bullets using the STAR method. Make them highly professional and impactful. Use strong action verbs.
+        2. PRUNING & LENGTH: {prune_rule} {page_rule}
+        3. LATEX SAFETY: Do NOT change the documentclass, preamble, or any structural commands. ONLY modify the text inside environments. Ensure special characters like \\& and \\% are escaped.
+
+        TARGET LANGUAGE: {target_language} (Translate all resume body content into this language).
+
+        INPUT DATA:
+        Target JD: {jd}
+        
+        Original LaTeX Source:
+        {raw_tex}
+
+        OUTPUT FORMAT: Return ONLY the final, complete LaTeX source code. Do not include markdown formatting like ```latex.
+        """
+        
+        try:
+            if provider == "Gemini":
+                from google import genai
+                client = genai.Client(api_key=api_key)
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash',
+                    contents=prompt
+                )
+                result_text = response.text
+            else:
+                from openai import OpenAI
+                if provider == "ChatGPT":
+                    client = OpenAI(api_key=api_key)
+                    model_name = "gpt-4o-mini"
+                elif provider == "DeepSeek":
+                    client = OpenAI(api_key=api_key, base_url="[https://api.deepseek.com](https://api.deepseek.com)")
+                    model_name = "deepseek-chat"
+                elif provider == "Doubao":
+                    client = OpenAI(api_key=api_key, base_url="[https://ark.cn-beijing.volces.com/api/v3](https://ark.cn-beijing.volces.com/api/v3)")
+                    model_name = doubao_id
+
+                response = client.chat.completions.create(
+                    model=model_name,
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                result_text = response.choices[0].message.content
+
+            result_text = result_text.strip()
+            import re
+            cleaned_text = re.sub(r'^```latex\n', '', result_text)
+            cleaned_text = re.sub(r'^```\n', '', cleaned_text)
+            cleaned_text = re.sub(r'\n```$', '', cleaned_text)
+            final_tex_content = re.sub(r'```$', '', cleaned_text)
+
+        except Exception as e:
+            self.status_label.config(text="🔴 AI 请求失败", fg="red")
+            messagebox.showerror("Error", f"AI 请求失败: {e}")
+            return
+
         final_tex_content = ensure_chinese_support(final_tex_content, target_language)
             
         output_tex_path = self.get_save_paths(self.source_filepath, "_polished", ".tex")
@@ -459,6 +519,7 @@ class ResumeApp:
             self.status_label.config(text="🎉 Complete!", fg="green")
             messagebox.showinfo("Success", f"{UI_TEXT['msg_success'][self.current_lang]}{final_pdf_path}")
         else:
+            self.status_label.config(text="🔴 编译失败", fg="red")
             messagebox.showerror("Compile Error", msg)
 
 if __name__ == "__main__":

@@ -4,35 +4,34 @@ def process_and_polish(provider, api_key, doubao_id, extracted_texts, job_descri
     if not extracted_texts:
         return {}, []
         
-    prune_rule = "你有绝对的权力删除与 JD 完全无关的早期经历或次要职责，并大刀阔斧地精简啰嗦的描述。" if allow_pruning else "绝对不要删除任何经历内容，只需润色和专业化表达。"
+    prune_rule = "你有绝对的权力删除与 JD 完全无关的早期经历或次要职责，并大刀阔斧地精简啰嗦的描述。必须严肃的，严格的，确认过往的经历和学术内容与JD中要求的技能和经验相匹配。一旦发现有一点不同或者不相关的内容，必须坚决删除。如果实在不想删除，可以添加内容，甚至在一定程度上伪造内容以满足JD要求。" if allow_pruning else "只需润色和专业化表达。"
     
     if target_pages == "1页 (极简)":
-        page_rule = "目标是 1 页纸简历，请将所有经历的总字数严格压缩在极短的篇幅内，只保留最核心的 STAR 法则成果。"
+        page_rule = "目标是 1 页纸或者更少的简历，请将所有经历的总字数严格压缩在极短的篇幅内，只保留最核心的 STAR 法则成果。"
     elif target_pages == "2页 (丰富)":
         page_rule = "目标是 2 页纸简历，可以在保证相关性的前提下提供充足的细节。"
     else:
         page_rule = "请根据内容自然输出，不强制限制篇幅。"
 
     prompt = f"""
-    你是一个顶级HR。请根据职位需求(JD)，优化我的简历经历。
-    重要指令：请务必将润色后的简历内容全部使用 {target_lang} 输出。
+    ROLE: Senior Executive Headhunter & LaTeX Expert.
+    TASK: Transform a messy, poorly-written resume into a high-impact, professional document aligned with the target Job Description (JD).
+
+    CORE DIRECTIVES:
+    1. CRITICAL RESTRUCTURING: Do not just "polish". If the original content is unprofessional or vague, REWRITE it entirely using professional terminology.
+    2. ACTION-RESULT ORIENTATION: Force every bullet point to follow the STAR method (Situation, Task, Action, Result). Use strong action verbs (e.g., Spearheaded, Engineered, Orchestrated).
+    3. RUTHLESS PRUNING: {prune_rule} Eliminate subjective fluff and irrelevant filler.
+    4. LENGTH CONTROL: {page_rule}
+    5. LATEX SAFETY: Ensure all special characters are escaped. Output MUST be valid LaTeX code segments.
     
-    【篇幅与删减规则】：
-    1. {prune_rule}
-    2. {page_rule}
-    
-    你必须输出一个严格的 JSON 对象，包含两个顶级键：
-    1. "polished_data": 一个字典。键为我提供的原经历文本，值为润色后的 {target_lang} 文本。请严格转义 LaTeX 特殊字符。
-    2. "new_skills": 一个数组。请分析 JD，提取缺失的技能成为简短的 {target_lang} 词组放入此数组。如果足够匹配，请返回空数组 []。
-    
-    职位需求 (JD)：
-    {job_description}
-    
-    现有技能库：
-    {skills_db}
-    
-    需要润色的经历：
-    {extracted_texts}
+    TARGET LANGUAGE: {target_lang} (Translate all resume content into this language).
+
+    INPUT DATA:
+    - Raw Content: {extracted_texts}
+    - Target JD: {job_description}
+    - Skills DB: {skills_db}
+
+    OUTPUT FORMAT: Return a strict JSON object with "polished_data" (mapping original to rewritten) and "new_skills".
     """
     
     try:
