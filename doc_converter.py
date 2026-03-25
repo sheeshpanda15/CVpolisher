@@ -8,12 +8,12 @@ def convert_to_tex(provider, api_key, doubao_id, filepath, mode="auto", template
 
     prune_rule = "允许大幅删减：你可以直接删除与JD或目标岗位完全无关的冗长经历，并极度精简啰嗦的句子。" if allow_pruning else "严禁删除：你必须将提取到的所有经历毫无保留地放进模板中，只需润色表达。"
     
-    if target_pages == "1页 (极简)":
-        page_rule = "严格字数限制：目标是单页简历。请将整体正文大幅压缩，保留最精华的亮点成果。"
-    elif target_pages == "2页 (丰富)":
-        page_rule = "宽松字数限制：目标是双页简历。请尽量保留丰富的工作细节。"
+    if target_pages == "1 Page":
+        page_rule = "The target is a 1 page resume. Condense all content to be extremely concise, keeping only the most high impact achievements."
+    elif target_pages == "2 Pages":
+        page_rule = "The target is a 2 page resume. Provide more detailed context and quantified results while maintaining relevance."
     else:
-        page_rule = "自然排版：请根据提供的内容量自然生成篇幅。"
+        page_rule = "Balance the length naturally based on the input content."
 
     if mode == "template":
         prompt = f"""

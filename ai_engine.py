@@ -4,32 +4,49 @@ def process_and_polish(provider, api_key, doubao_id, extracted_texts, job_descri
     if not extracted_texts:
         return {}, []
         
-    prune_rule = "你有绝对的权力删除与 JD 完全无关的早期经历或次要职责，并大刀阔斧地精简啰嗦的描述。必须严肃的，严格的，确认过往的经历和学术内容与JD中要求的技能和经验相匹配。一旦发现有一点不同或者不相关的内容，必须坚决删除。如果实在不想删除，可以添加内容，甚至在一定程度上伪造内容以满足JD要求。" if allow_pruning else "只需润色和专业化表达。"
+    # 判断是否提供了有效的 JD (字符长度大于5算作有效)
+    has_jd = bool(job_description and len(job_description.strip()) > 5)
     
-    if target_pages == "1页 (极简)":
-        page_rule = "目标是 1 页纸或者更少的简历，请将所有经历的总字数严格压缩在极短的篇幅内，只保留最核心的 STAR 法则成果。"
-    elif target_pages == "2页 (丰富)":
-        page_rule = "目标是 2 页纸简历，可以在保证相关性的前提下提供充足的细节。"
+    if has_jd:
+        # 模式A：有 JD，执行严格匹配和暴力裁剪
+        jd_instruction = f"Target JD: {job_description}"
+        task_instruction = "Transform a messy, poorly written resume into a high impact, professional document strictly aligned with the target Job Description (JD)."
+        
+        if allow_pruning:
+            prune_rule = "You have absolute authority to delete early experiences or minor responsibilities completely unrelated to the JD, and to drastically streamline wordy descriptions. You must seriously and strictly ensure past experiences match the JD requirements. If any irrelevant content is found, it must be firmly deleted. To highly align with the JD, you may appropriately package or reasonably supplement missing key details."
+        else:
+            prune_rule = "Do not delete any experience content. Only polish and professionalize the expression to align logically with the JD."
+            
     else:
-        page_rule = "请根据内容自然输出，不强制限制篇幅。"
+        # 模式B：无 JD，降级为高质量翻译与基础润色
+        jd_instruction = "Target JD: [NOT PROVIDED]"
+        task_instruction = "Translate the provided resume content accurately into the target language and perform baseline professional polishing. DO NOT alter the core facts."
+        prune_rule = "NO PRUNING ALLOWED. Because no JD is provided, you must keep all original information intact. Only focus on high quality translation and professional phrasing without deleting any details."
+
+    if target_pages == "1 Page":
+        page_rule = "The target is a 1 page resume. Condense all content to be extremely concise, keeping only the most high impact achievements."
+    elif target_pages == "2 Pages":
+        page_rule = "The target is a 2 page resume. Provide more detailed context and quantified results while maintaining relevance."
+    else:
+        page_rule = "Balance the length naturally based on the input content."
 
     prompt = f"""
     ROLE: Senior Executive Headhunter & LaTeX Expert.
-    TASK: Transform a messy, poorly-written resume into a high-impact, professional document aligned with the target Job Description (JD).
+    TASK: {task_instruction}
 
     CORE DIRECTIVES:
     1. CRITICAL RESTRUCTURING: Do not just "polish". If the original content is unprofessional or vague, REWRITE it entirely using professional terminology.
-    2. ACTION-RESULT ORIENTATION: Force every bullet point to follow the STAR method (Situation, Task, Action, Result). Use strong action verbs (e.g., Spearheaded, Engineered, Orchestrated).
-    3. RUTHLESS PRUNING: {prune_rule} Eliminate subjective fluff and irrelevant filler.
+    2. ACTION RESULT ORIENTATION: Force every bullet point to follow the STAR method (Situation, Task, Action, Result). Use strong action verbs (e.g., Spearheaded, Engineered, Orchestrated).
+    3. PRUNING RULE: {prune_rule}
     4. LENGTH CONTROL: {page_rule}
     5. LATEX SAFETY: Ensure all special characters are escaped. Output MUST be valid LaTeX code segments.
     
     TARGET LANGUAGE: {target_lang} (Translate all resume content into this language).
 
     INPUT DATA:
-    - Raw Content: {extracted_texts}
-    - Target JD: {job_description}
-    - Skills DB: {skills_db}
+    * Raw Content: {extracted_texts}
+    * {jd_instruction}
+    * Skills DB: {skills_db}
 
     OUTPUT FORMAT: Return a strict JSON object with "polished_data" (mapping original to rewritten) and "new_skills".
     """

@@ -79,7 +79,7 @@ def smart_inject_skills(tex_content, new_skills):
 class ResumeApp:
     def __init__(self, root):
         self.root = root
-        self.root.title(UI_TEXT["title"]["zh"])
+        self.root.title("AIPolisher")
         self.root.geometry("820x980")
         self.root.configure(bg="#f5f5f5")
         
@@ -89,7 +89,7 @@ class ResumeApp:
         self.source_filepath = "" 
         self.template_project = None 
         self.output_dir = ""
-        self.current_lang = "zh"
+        self.current_lang = "en"
         
         top_bar = tk.Frame(root, bg="#ffffff", relief="flat", borderwidth=1)
         top_bar.pack(fill="x", padx=20, pady=(15, 10))
@@ -103,14 +103,14 @@ class ResumeApp:
         self.lbl_ui_lang = tk.Label(settings_frame, text=UI_TEXT["ui_lang"][self.current_lang], bg="#ffffff")
         self.lbl_ui_lang.pack(side="left")
         self.ui_lang_cb = ttk.Combobox(settings_frame, values=["中文", "English"], width=6, state="readonly")
-        self.ui_lang_cb.current(0)
+        self.ui_lang_cb.current(1)
         self.ui_lang_cb.pack(side="left", padx=5)
         self.ui_lang_cb.bind("<<ComboboxSelected>>", self.change_ui_lang)
         
         self.lbl_doc_lang = tk.Label(settings_frame, text=UI_TEXT["doc_lang"][self.current_lang], bg="#ffffff")
         self.lbl_doc_lang.pack(side="left", padx=(10, 0))
         self.doc_lang_cb = ttk.Combobox(settings_frame, values=["中文", "English"], width=6, state="readonly")
-        self.doc_lang_cb.current(0)
+        self.doc_lang_cb.current(1)
         self.doc_lang_cb.pack(side="left", padx=5)
         
         self.btn_out_dir = tk.Button(settings_frame, text=UI_TEXT["out_dir_btn"][self.current_lang], command=self.choose_output_dir, relief="flat", bg="#e0e0e0")
@@ -189,7 +189,7 @@ class ResumeApp:
         page_row.pack(fill="x", pady=5)
         self.lbl_pages = tk.Label(page_row, text=UI_TEXT["lbl_pages"][self.current_lang], bg="#ffffff")
         self.lbl_pages.pack(side="left")
-        self.page_cb = ttk.Combobox(page_row, values=["自动判断", "1页 (极简)", "2页 (丰富)"], width=12, state="readonly")
+        self.page_cb = ttk.Combobox(page_row, values=["Auto", "1 Page", "2 Pages"], width=12, state="readonly")
         self.page_cb.current(0)
         self.page_cb.pack(side="left", padx=5)
         
@@ -437,10 +437,10 @@ class ResumeApp:
         with open(self.source_filepath, "r", encoding="utf8", errors="ignore") as f:
             raw_tex = f.read()
             
-        if target_pages == "1页 (极简)":
-            page_rule = "The target is a 1-page resume. Condense all content to be extremely concise, keeping only the most high-impact achievements."
-        elif target_pages == "2页 (丰富)":
-            page_rule = "The target is a 2-page resume. Provide more detailed context and quantified results while maintaining relevance."
+        if target_pages == "1 Page":
+            page_rule = "The target is a 1 page resume. Condense all content to be extremely concise, keeping only the most high impact achievements."
+        elif target_pages == "2 Pages":
+            page_rule = "The target is a 2 page resume. Provide more detailed context and quantified results while maintaining relevance."
         else:
             page_rule = "Balance the length naturally based on the input content."
 
